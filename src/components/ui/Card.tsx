@@ -1,12 +1,12 @@
 import { type VariantProps, cva } from 'class-variance-authority'
 
 export const cardVariants = cva(
-  'rounded-xl border border-border bg-card text-card-foreground p-6 shadow-sm',
+  'rounded-xl border border-surface-border bg-surface-base text-foreground shadow-sm',
   {
     variants: {
       variant: {
-        default: 'border-border',
-        elevated: 'border-border shadow-md',
+        default: 'border-surface-border',
+        elevated: 'border-surface-border shadow-md',
       },
     },
     defaultVariants: {
@@ -41,7 +41,7 @@ export function CardHeader({
     <div className={className}>
       {title && <h3 className="text-sm font-semibold text-foreground tracking-tight">{title}</h3>}
       {description && (
-        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        <p className="mt-1 text-sm text-text-muted">{description}</p>
       )}
     </div>
   )

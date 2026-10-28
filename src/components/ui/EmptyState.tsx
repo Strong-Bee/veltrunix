@@ -29,12 +29,14 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center p-8">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted text-muted-foreground mb-4">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-surface-elevated text-text-muted mb-4">
         {icon}
       </div>
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+      <h2 className="text-lg font-semibold text-text-primary mb-1">
+        {title}
+      </h2>
       {description && (
-        <p className="mt-2 text-sm text-muted-foreground max-w-xs">
+        <p className="mt-1 text-sm text-text-muted max-w-xs">
           {description}
         </p>
       )}

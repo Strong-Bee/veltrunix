@@ -19,9 +19,9 @@ const getConfig = (
   if (variant === 'vhost' || typeof status === 'boolean') {
     const enabled = status === 'Aktif' || status === true
     return {
-      bg: enabled ? 'bg-green-500/10' : 'bg-slate-500/10',
-      text: enabled ? 'text-green-400' : 'text-slate-400',
-      border: enabled ? 'border-green-500/30' : 'border-slate-500/30',
+      bg: enabled ? 'bg-status-active-bg' : 'bg-status-inactive-bg',
+      text: enabled ? 'text-status-active-text' : 'text-status-inactive-text',
+      border: enabled ? 'border-status-active-border' : 'border-status-inactive-border',
       label: enabled ? 'Aktif' : 'Nonaktif',
       dot: enabled,
     }
@@ -29,37 +29,37 @@ const getConfig = (
 
   const config: Record<string, { bg: string; text: string; border: string; label: string; dot: boolean }> = {
     Installed: {
-      bg: 'bg-green-500/10',
-      text: 'text-green-400',
-      border: 'border-green-500/30',
+      bg: 'bg-status-installed-bg',
+      text: 'text-status-installed-text',
+      border: 'border-status-installed-border',
       label: 'Installed',
       dot: true,
     },
     'Not found': {
-      bg: 'bg-slate-500/10',
-      text: 'text-slate-400',
-      border: 'border-slate-500/30',
+      bg: 'bg-status-notFound-bg',
+      text: 'text-status-notFound-text',
+      border: 'border-status-notFound-border',
       label: 'Not found',
       dot: false,
     },
     Running: {
-      bg: 'bg-green-500/10',
-      text: 'text-green-400',
-      border: 'border-green-500/30',
+      bg: 'bg-status-running-bg',
+      text: 'text-status-running-text',
+      border: 'border-status-running-border',
       label: 'Running',
       dot: true,
     },
     Stopped: {
-      bg: 'bg-amber-500/10',
-      text: 'text-amber-400',
-      border: 'border-amber-500/30',
+      bg: 'bg-status-stopped-bg',
+      text: 'text-status-stopped-text',
+      border: 'border-status-stopped-border',
       label: 'Stopped',
       dot: false,
     },
     Error: {
-      bg: 'bg-red-500/10',
-      text: 'text-red-400',
-      border: 'border-red-500/30',
+      bg: 'bg-status-error-bg',
+      text: 'text-status-error-text',
+      border: 'border-status-error-border',
       label: 'Error',
       dot: false,
     },

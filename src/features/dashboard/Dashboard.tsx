@@ -83,53 +83,65 @@ export default function Dashboard() {
       />
 
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400 text-sm">
+        <div className="alert alert-error">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card variant="elevated">
           <CardHeader title="Informasi aplikasi" />
-          <CardContent className="mt-4 flex flex-col gap-2">
-            {loading && <p className="text-sm text-muted-foreground">Memuat dari backend…</p>}
+          <CardContent className="mt-4 flex flex-col gap-3">
+            {loading && (
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                <span className="text-sm text-text-muted">Memuat dari backend…</span>
+              </div>
+            )}
             {info && (
               <>
-                <p className="text-sm">
-                  <span className="font-medium text-muted-foreground">Nama:</span>{' '}
-                  <span className="text-foreground">{info.name}</span>
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium text-muted-foreground">Versi:</span>{' '}
-                  <span className="text-foreground">{info.version}</span>
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium text-muted-foreground">Platform:</span>{' '}
-                  <span className="text-foreground">{info.platform}</span>
-                </p>
+                <div className="flex items-center justify-between py-2 border-b border-surface-border last:border-0">
+                  <span className="text-sm text-text-muted">Nama</span>
+                  <span className="text-sm font-mono text-text-primary">{info.name}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-surface-border last:border-0">
+                  <span className="text-sm text-text-muted">Versi</span>
+                  <span className="text-sm font-mono text-text-primary">{info.version}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-sm text-text-muted">Platform</span>
+                  <span className="text-sm font-mono text-text-primary">{info.platform}</span>
+                </div>
               </>
             )}
             {!info && !loading && !error && (
-              <Button variant="ghost" size="sm" onClick={fetchInfo}>
+              <Button variant="outline" size="sm" onClick={fetchInfo}>
                 Periksa informasi aplikasi
               </Button>
             )}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card variant="elevated">
           <CardHeader title="Status layanan" />
           <CardContent className="mt-4">
             <div className="space-y-3">
               {services.map((svc) => (
                 <div
                   key={svc.label}
-                  className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                  className="flex items-center justify-between py-3 border-b border-surface-border last:border-0"
                 >
                   <div>
-                    <p className="text-sm font-medium text-foreground">{svc.label}</p>
+                    <p className="text-sm font-medium text-text-primary">{svc.label}</p>
                     {svc.version && (
-                      <p className="text-xs text-muted-foreground font-mono">
+                      <p className="text-xs text-text-muted font-mono">
                         {svc.version}
                       </p>
                     )}
@@ -138,7 +150,7 @@ export default function Dashboard() {
                 </div>
               ))}
               {services.length === 0 && !loading && !error && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-text-muted">
                   Belum ada pemeriksaan yang dilakukan.
                 </p>
               )}
@@ -146,25 +158,28 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card variant="elevated">
           <CardHeader title="Aksi cepat" />
           <CardContent className="mt-4 space-y-3">
-            <Button variant="primary" size="sm" className="w-full">
+            <Button variant="primary" size="sm" className="w-full sm:w-auto" onClick={fetchInfo}>
               Deteksi Semua Runtime
             </Button>
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               Deteksi Nginx
             </Button>
-            <Button variant="ghost" size="sm" className="w-full">
+            <Button variant="ghost" size="sm" className="w-full sm:w-auto">
               Kelola Virtual Host
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader title="Runtime Manager" description="Deteksi dan manajemen versi runtime (PHP, Node.js, npm, Composer, Git)." />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card variant="elevated">
+          <CardHeader
+            title="Runtime Manager"
+            description="Deteksi dan manajemen versi runtime pengembangan web lokal (PHP, Node.js, npm, Composer, Git)."
+          />
           <CardContent className="mt-4">
             <EmptyState
               title="Belum ada data runtime"
@@ -177,8 +192,11 @@ export default function Dashboard() {
             />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader title="Layanan &amp; Port" description="Pemeriksaan port, PID proses, dan kontrol start/stop layanan akan ditampilkan di sini." />
+        <Card variant="elevated">
+          <CardHeader
+            title="Layanan & Port"
+            description="Pemeriksaan port, PID proses, dan kontrol start/stop layanan akan ditampilkan di sini."
+          />
           <CardContent className="mt-4">
             <EmptyState
               title="Belum diimplementasikan"

@@ -91,7 +91,6 @@ export default function VHostManager() {
   useEffect(() => {
     loadVhosts()
 
-    // Deteksi path Nginx untuk validasi konfigurasi
     detectNginx({ path: null })
       .then((info: any) => {
         if (info.path) {
@@ -99,7 +98,7 @@ export default function VHostManager() {
         }
       })
       .catch(() => {
-        // Abaikan error deteksi, backend akan mencoba deteksi sendiri
+        // Abaikan error deteksi
       })
   }, [loadVhosts])
 
@@ -302,22 +301,22 @@ export default function VHostManager() {
       />
 
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400 text-sm">
+        <div className="alert alert-error">
           {error}
         </div>
       )}
 
       {showForm && (
-        <Card>
-          <CardContent className="mt-0">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                editing ? update() : create()
-              }}
-              className="space-y-4"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Card variant="elevated">
+          <CardContent className="mt-0 p-0">
+            <div className="p-6">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  editing ? update() : create()
+                }}
+                className="space-y-4"
+              >
                 <div className="space-y-1">
                   <label className="label">Domain</label>
                   <Input
@@ -336,102 +335,104 @@ export default function VHostManager() {
                     onChange={(e) => setForm({ ...form, root: e.target.value })}
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="label">Port</label>
-                  <Input
-                    type="text"
-                    value={form.port}
-                    onChange={(e) => setForm({ ...form, port: e.target.value })}
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={form.php_enabled}
-                    onChange={(e) =>
-                      setForm({ ...form, php_enabled: e.target.checked })
-                    }
-                    className="rounded text-green-500 focus:ring-green-500"
-                  />
-                  <label className="text-sm text-foreground">Aktifkan PHP (FastCGI)</label>
-                </div>
-              </div>
-
-              {form.php_enabled && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="label">FastCGI Port</label>
+                    <label className="label">Port</label>
                     <Input
                       type="text"
-                      value={form.php_fastcgi_port}
-                      onChange={(e) => setForm({ ...form, php_fastcgi_port: e.target.value })}
+                      value={form.port}
+                      onChange={(e) => setForm({ ...form, port: e.target.value })}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Port php-cgi.exe (default: 9000)
-                    </p>
                   </div>
-                  <div className="space-y-1">
-                    <label className="label">FastCGI Address</label>
-                    <Input
-                      type="text"
-                      placeholder="127.0.0.1"
-                      value={form.php_fastcgi_address}
-                      onChange={(e) => setForm({ ...form, php_fastcgi_address: e.target.value })}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={form.php_enabled}
+                      onChange={(e) =>
+                        setForm({ ...form, php_enabled: e.target.checked })
+                      }
+                      className="rounded border-surface-border bg-surface-base text-primary focus:ring-primary"
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Alamat bind php-cgi.exe
-                    </p>
+                    <label className="text-sm text-text-primary">Aktifkan PHP (FastCGI)</label>
                   </div>
                 </div>
+
+                {form.php_enabled && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="label">FastCGI Port</label>
+                      <Input
+                        type="text"
+                        value={form.php_fastcgi_port}
+                        onChange={(e) => setForm({ ...form, php_fastcgi_port: e.target.value })}
+                      />
+                      <p className="text-xs text-text-muted">
+                        Port php-cgi.exe (default: 9000)
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="label">FastCGI Address</label>
+                      <Input
+                        type="text"
+                        placeholder="127.0.0.1"
+                        value={form.php_fastcgi_address}
+                        onChange={(e) => setForm({ ...form, php_fastcgi_address: e.target.value })}
+                      />
+                      <p className="text-xs text-text-muted">
+                        Alamat bind php-cgi.exe
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={loading}
+                    className="flex-1 sm:flex-none"
+                  >
+                    {editing ? 'Simpan Perubahan' : 'Buat Virtual Host'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowForm(false)
+                      setEditing(null)
+                      setForm({
+                        domain: '',
+                        root: '',
+                        port: '80',
+                        php_enabled: false,
+                        php_fastcgi_port: '9000',
+                        php_fastcgi_address: '127.0.0.1',
+                      })
+                      setPreviewConfig(null)
+                    }}
+                    className="flex-1 sm:flex-none"
+                  >
+                    Batal
+                  </Button>
+                </div>
+              </form>
+
+              {previewConfig && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-text-primary mb-2">Preview Konfigurasi Nginx</h3>
+                  <Card className="p-4">
+                    <CardContent className="p-0">
+                      <pre className="p-4 font-mono text-xs overflow-x-auto bg-surface-base border border-surface-border rounded-lg">
+                        {previewConfig}
+                      </pre>
+                      <p className="mt-3 text-xs text-text-muted text-center">
+                        Konfigurasi akan divalidasi dengan `nginx -t` sebelum disimpan.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
-
-              <div className="flex gap-3 pt-2">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={loading}
-                >
-                  {editing ? 'Simpan Perubahan' : 'Buat Virtual Host'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    setShowForm(false)
-                    setEditing(null)
-                    setForm({
-                      domain: '',
-                      root: '',
-                      port: '80',
-                      php_enabled: false,
-                      php_fastcgi_port: '9000',
-                      php_fastcgi_address: '127.0.0.1',
-                    })
-                    setPreviewConfig(null)
-                  }}
-                >
-                  Batal
-                </Button>
-              </div>
-            </form>
-
-            {previewConfig && (
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-foreground mb-2">Preview Konfigurasi Nginx</h3>
-                <Card className="p-4">
-                  <CardContent className="p-0">
-                    <pre className="p-4 font-mono text-xs overflow-x-auto bg-background border border-border rounded-lg">
-                      {previewConfig}
-                    </pre>
-                    <p className="mt-3 text-xs text-muted-foreground text-center">
-                      Konfigurasi akan divalidasi dengan `nginx -t` sebelum disimpan.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -448,42 +449,42 @@ export default function VHostManager() {
             }
           />
         ) : (
-          <Card>
-            <CardContent className="mt-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+          <Card variant="elevated">
+            <CardContent className="mt-0 p-0">
+              <div className="table-container">
+                <table className="table">
                   <thead>
-                    <tr className="border-b border-border">
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Domain</th>
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Root</th>
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Port</th>
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">PHP</th>
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">FastCGI</th>
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Status</th>
-                      <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Aksi</th>
+                    <tr className="border-b border-surface-border">
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Domain</th>
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Root</th>
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Port</th>
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">PHP</th>
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">FastCGI</th>
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Status</th>
+                      <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     {vhosts.map((vhost) => (
-                      <tr key={vhost.name} className="border-b border-border last:border-0">
+                      <tr key={vhost.name} className="border-b border-surface-border last:border-0 hover:bg-surface-elevated/50 transition-colors">
                         <td className="py-4">
-                          <span className="font-medium text-foreground">{vhost.domain}</span>
+                          <span className="font-medium text-text-primary">{vhost.domain}</span>
                         </td>
                         <td className="py-4">
-                          <span className="text-sm text-muted-foreground truncate max-w-xs" title={vhost.root}>
+                          <span className="text-sm text-text-muted truncate-path" title={vhost.root}>
                             {vhost.root}
                           </span>
                         </td>
                         <td className="py-4">
-                          <span className="text-sm font-mono text-foreground">{vhost.port}</span>
+                          <span className="text-sm font-mono text-text-primary">{vhost.port}</span>
                         </td>
                         <td className="py-4">
-                          <span className={`text-xs ${vhost.php_enabled ? 'text-green-400' : 'text-muted-foreground'}`}>
+                          <span className={`text-xs ${vhost.php_enabled ? 'text-status-active-text' : 'text-text-muted'}`}>
                             {vhost.php_enabled ? 'Aktif' : '—'}
                           </span>
                         </td>
                         <td className="py-4">
-                          <span className={`text-xs font-mono ${vhost.php_enabled ? 'text-blue-400' : 'text-muted-foreground'}`}>
+                          <span className={`text-xs font-mono ${vhost.php_enabled ? 'text-text-link' : 'text-text-muted'}`}>
                             {vhost.php_enabled && vhost.php_fastcgi_port && vhost.php_fastcgi_address
                               ? `${vhost.php_fastcgi_address}:${vhost.php_fastcgi_port}`
                               : '—'}
@@ -497,10 +498,10 @@ export default function VHostManager() {
                             <button
                               onClick={() => toggleEnable(vhost)}
                               disabled={loading}
-                              className="px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                                 vhost.enabled
-                                  ? 'text-red-400 bg-red-500/10 hover:bg-red-500/20'
-                                  : 'text-green-400 bg-green-500/10 hover:bg-green-500/20'
+                                  ? 'text-destructive bg-destructive/10 hover:bg-destructive/20'
+                                  : 'text-status-active-text bg-status-active-bg hover:bg-status-active-bg/50'
                               }"
                             >
                               {vhost.enabled ? 'Nonaktifkan' : 'Aktifkan'}
@@ -528,14 +529,14 @@ export default function VHostManager() {
                                 )
                                 setShowForm(true)
                               }}
-                              className="px-3 py-1.5 text-xs font-medium text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded transition-colors"
+                              className="px-3 py-1.5 text-xs font-medium text-text-link bg-text-link/10 hover:bg-text-link/20 rounded-md transition-colors"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => remove(vhost.name)}
                               disabled={loading}
-                              className="px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded transition-colors"
+                              className="px-3 py-1.5 text-xs font-medium text-destructive bg-destructive/10 hover:bg-destructive/20 rounded-md transition-colors"
                             >
                               Hapus
                             </button>

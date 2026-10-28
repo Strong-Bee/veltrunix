@@ -58,27 +58,27 @@ export default function RuntimeManager() {
       />
 
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400 text-sm">
+        <div className="alert alert-error">
           {error}
         </div>
       )}
 
-      <Card>
-        <CardContent className="mt-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+      <Card variant="elevated">
+        <CardContent className="mt-0 p-0">
+          <div className="table-container">
+            <table className="table">
               <thead>
-                <tr className="border-b border-border">
-                  <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Runtime</th>
-                  <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Status</th>
-                  <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Versi</th>
-                  <th className="pb-3 font-medium text-muted-foreground uppercase text-xs tracking-wider">Path</th>
+                <tr className="border-b border-surface-border">
+                  <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Runtime</th>
+                  <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Status</th>
+                  <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Versi</th>
+                  <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Path</th>
                 </tr>
               </thead>
               <tbody>
                 {runtimes.length === 0 && !loading && !error ? (
                   <tr>
-                    <td colSpan={4} className="py-8 text-center">
+                    <td colSpan={4} className="py-12 text-center">
                       <EmptyState
                         title="Tidak ada data runtime"
                         description="Klik tombol Refresh untuk memulai deteksi dari backend."
@@ -94,9 +94,9 @@ export default function RuntimeManager() {
                   RUNTIME_TYPES.map((rt) => {
                     const info = runtimes.find((r) => r.name === rt.key)
                     return (
-                      <tr key={rt.key} className="border-b border-border last:border-0">
+                      <tr key={rt.key} className="border-b border-surface-border last:border-0 hover:bg-surface-elevated/50 transition-colors">
                         <td className="py-4">
-                          <span className="font-medium text-foreground">{rt.label}</span>
+                          <span className="font-medium text-text-primary">{rt.label}</span>
                         </td>
                         <td className="py-4">
                           {info ? (
@@ -107,21 +107,24 @@ export default function RuntimeManager() {
                         </td>
                         <td className="py-4">
                           {info?.version ? (
-                            <span className="text-sm font-mono text-foreground">{info.version}</span>
+                            <span className="text-sm font-mono text-text-primary">{info.version}</span>
                           ) : (
-                            <span className="text-sm text-muted-foreground">—</span>
+                            <span className="text-sm text-text-muted">—</span>
                           )}
                         </td>
                         <td className="py-4">
                           {info?.path ? (
-                            <span className="text-sm text-muted-foreground truncate max-w-xs" title={info.path}>
+                            <span
+                              className="text-sm text-text-muted truncate-path"
+                              title={info.path}
+                            >
                               {info.path}
                             </span>
                           ) : (
-                            <span className="text-sm text-muted-foreground">—</span>
+                            <span className="text-sm text-text-muted">—</span>
                           )}
                           {info?.error && (
-                            <div className="mt-1 text-xs text-red-400">{info.error}</div>
+                            <div className="mt-1 text-xs text-destructive">{info.error}</div>
                           )}
                         </td>
                       </tr>
@@ -135,7 +138,7 @@ export default function RuntimeManager() {
       </Card>
 
       {!loading && !error && runtimes.length > 0 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-text-muted">
           Status terbaru diperoleh secara langsung dari pemeriksaan backend. Jalankan Refresh untuk
           memperbarui data.
         </p>
