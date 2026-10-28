@@ -1,0 +1,12 @@
+/target
+src-tauri/target
+/dist
+node_modules/
+.vite/
+*.local
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

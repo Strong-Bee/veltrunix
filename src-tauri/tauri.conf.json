@@ -1,0 +1,29 @@
+{
+  "productName": "Veltrunix",
+  "version": "0.1.0",
+  "identifier": "com.veltrunix.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Veltrunix",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "maximizable": true,
+        "minimizable": true,
+        "closable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:1420 ws://localhost:1420;"
+    }
+  }
+}
