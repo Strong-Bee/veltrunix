@@ -22,13 +22,15 @@ pub fn detect_runtime_by_name(req: DetectRuntimeRequest) -> crate::runtime::mode
         "npm" => RuntimeType::Npm,
         "composer" => RuntimeType::Composer,
         "git" => RuntimeType::Git,
-        _ => return crate::runtime::models::RuntimeInfo {
-            name: req.name,
-            status: crate::runtime::models::RuntimeStatus::Error,
-            version: None,
-            path: None,
-            error: Some("Tipe runtime tidak dikenal".to_string()),
-        },
+        _ => {
+            return crate::runtime::models::RuntimeInfo {
+                name: req.name,
+                status: crate::runtime::models::RuntimeStatus::Error,
+                version: None,
+                path: None,
+                error: Some("Tipe runtime tidak dikenal".to_string()),
+            };
+        }
     };
     detect_runtime(rt)
 }

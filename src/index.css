@@ -2,8 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @layer base {
+  :root {
+    --color-primary: #1E293B;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #334155;
+    --color-on-secondary: #FFFFFF;
+    --color-accent: #22C55E;
+    --color-on-accent: #0F172A;
+    --color-background: #0F172A;
+    --color-foreground: #F8FAFC;
+    --color-card: #1B2336;
+    --color-card-foreground: #F8FAFC;
+    --color-muted: #272F42;
+    --color-muted-foreground: #94A3B8;
+    --color-border: #475569;
+    --color-destructive: #EF4444;
+    --color-on-destructive: #000000;
+    --color-ring: #FFFFFF;
+
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+
+    --font-sans: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-foreground tracking-tight;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent text-on-accent hover:bg-green-600 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-on-secondary hover:bg-slate-700 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-foreground hover:bg-muted active:scale-[0.98];
+  }
+
+  .btn-destructive {
+    @apply btn bg-destructive text-on-destructive hover:bg-red-600 active:scale-[0.98];
+  }
+
+  .btn-sm {
+    @apply btn px-3 py-1.5 text-xs;
+  }
+
+  .btn-md {
+    @apply btn px-4 py-2;
+  }
+
+  .btn-lg {
+    @apply btn px-6 py-3 text-base;
+  }
+
+  .input {
+    @apply flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .label {
+    @apply text-sm font-medium text-foreground mb-1;
+  }
+
+  .card {
+    @apply rounded-xl border border-border bg-card text-card-foreground p-6 shadow-sm;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

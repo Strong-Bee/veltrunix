@@ -17,7 +17,9 @@ fn find_executable_in_path(exe_name: &str) -> Option<String> {
             // Gabungkan direktori dan nama executable; handles path dengan spasi
             let clean_dir = dir.trim_end_matches('\\').trim_end_matches('/');
             let full_path = format!("{}\\{}", clean_dir, exe_name);
-            if std::path::Path::new(&full_path).exists() && std::path::Path::new(&full_path).is_file() {
+            if std::path::Path::new(&full_path).exists()
+                && std::path::Path::new(&full_path).is_file()
+            {
                 return Some(full_path);
             }
         }
@@ -44,9 +46,7 @@ fn run_version_command(exe_path: &str, args: &[&str]) -> Result<(String, String,
     let args_owned: Vec<String> = args.iter().map(|s| s.to_string()).collect();
 
     let handler = thread::spawn(move || {
-        let result = Command::new(&exe_path_owned)
-            .args(&args_owned)
-            .output();
+        let result = Command::new(&exe_path_owned).args(&args_owned).output();
         let _ = tx.send(result);
     });
 
@@ -216,7 +216,10 @@ mod tests {
     #[test]
     fn test_extract_version_unknown_format() {
         let output = "Some unknown output without version";
-        assert_eq!(extract_version(output), "Some unknown output without version");
+        assert_eq!(
+            extract_version(output),
+            "Some unknown output without version"
+        );
     }
 
     #[test]

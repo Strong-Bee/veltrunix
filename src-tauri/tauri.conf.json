@@ -24,5 +24,21 @@
     "security": {
       "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:1420 ws://localhost:1420;"
     }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "identifier": "com.veltrunix.desktop",
+    "icon": [
+      "icons/icon.ico"
+    ],
+    "resources": [
+      "icons/*"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    }
   }
 }

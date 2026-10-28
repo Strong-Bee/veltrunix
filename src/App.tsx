@@ -4,6 +4,7 @@ import RuntimeManager from './features/runtimes/RuntimeManager'
 import NginxManager from './features/nginx/NginxManager'
 import VHostManager from './features/vhosts/VHostManager'
 import PhpManager from './features/php/PhpManager'
+import About from './features/about/About'
 import { Shell } from './components/Shell'
 import { NotImplemented } from './features/not-implemented'
 
@@ -21,6 +22,7 @@ type Page =
   | 'settings'
   | 'nginx'
   | 'vhosts'
+  | 'about'
 
 const NAV: { key: Page; label: string }[] = [
   { key: 'dashboard', label: 'Dashboard' },
@@ -36,6 +38,7 @@ const NAV: { key: Page; label: string }[] = [
   { key: 'services', label: 'Services' },
   { key: 'logs', label: 'Logs' },
   { key: 'settings', label: 'Settings' },
+  { key: 'about', label: 'About' },
 ]
 
 export default function App() {
@@ -59,6 +62,8 @@ export default function App() {
         <VHostManager />
       ) : page === 'php' ? (
         <PhpManager />
+      ) : page === 'about' ? (
+        <About />
       ) : (
         <NotImplemented module={current?.label ?? String(page)} />
       )}
