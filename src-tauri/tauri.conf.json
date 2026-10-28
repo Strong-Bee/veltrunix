@@ -28,7 +28,6 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "identifier": "com.veltrunix.desktop",
     "icon": [
       "icons/icon.ico"
     ],
