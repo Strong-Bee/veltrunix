@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Dashboard from './features/dashboard/Dashboard'
+import RuntimeManager from './features/runtimes/RuntimeManager'
 import { Shell } from './components/Shell'
 import { NotImplemented } from './features/not-implemented'
 
@@ -35,10 +36,16 @@ export default function App() {
 
   const current = NAV.find((n) => n.key === page)
 
+  const onSelect = (key: string) => {
+    setPage(key as Page);
+  };
+
   return (
-    <Shell nav={NAV} active={page} onSelect={setPage}>
+    <Shell nav={NAV} active={page} onSelect={onSelect}>
       {page === 'dashboard' ? (
         <Dashboard />
+      ) : page === 'runtimes' ? (
+        <RuntimeManager />
       ) : (
         <NotImplemented module={current?.label ?? String(page)} />
       )}
