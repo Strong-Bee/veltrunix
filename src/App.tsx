@@ -5,6 +5,7 @@ import NginxManager from './features/nginx/NginxManager'
 import VHostManager from './features/vhosts/VHostManager'
 import PhpManager from './features/php/PhpManager'
 import About from './features/about/About'
+import Services from './features/services/Services'
 import { Shell } from './components/Shell'
 import { NotImplemented } from './features/not-implemented'
 
@@ -62,6 +63,8 @@ export default function App() {
         <VHostManager />
       ) : page === 'php' ? (
         <PhpManager />
+      ) : page === 'services' ? (
+        <Services />
       ) : page === 'about' ? (
         <About />
       ) : (
