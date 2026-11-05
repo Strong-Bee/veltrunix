@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dashboard from './features/dashboard/Dashboard'
 import RuntimeManager from './features/runtimes/RuntimeManager'
 import NginxManager from './features/nginx/NginxManager'
@@ -44,6 +44,15 @@ const NAV: { key: Page; label: string }[] = [
 
 export default function App() {
   const [page, setPage] = useState<Page>('dashboard')
+
+  useEffect(() => {
+    const navigate = (event: Event) => {
+      const key = (event as CustomEvent<string>).detail
+      if (NAV.some((item) => item.key === key)) setPage(key as Page)
+    }
+    window.addEventListener('veltrunix:navigate', navigate)
+    return () => window.removeEventListener('veltrunix:navigate', navigate)
+  }, [])
 
   const current = NAV.find((n) => n.key === page)
 

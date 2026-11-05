@@ -9,160 +9,77 @@ export interface ShellProps {
   children: React.ReactNode
 }
 
+const GROUPS = [
+  { title: 'WORKSPACE', keys: ['dashboard', 'projects', 'domains', 'vhosts'] },
+  { title: 'ENVIRONMENT', keys: ['services', 'webservers', 'nginx', 'runtimes', 'php', 'databases'] },
+  { title: 'DEVELOPMENT', keys: ['laravel', 'logs'] },
+  { title: 'PREFERENCES', keys: ['settings', 'about'] },
+]
+
 export function Shell({ nav, active, onSelect, children }: ShellProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  // Detect mobile breakpoint
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-
-  // On mobile, start with drawer closed; on desktop, start with sidebar expanded
-  useEffect(() => {
-    setMounted(true)
-    if (isMobile) {
-      setCollapsed(false)
-      setDrawerOpen(false)
-    } else {
-      setDrawerOpen(false)
-    }
-  }, [isMobile])
-
-  // Close drawer on Escape key
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && drawerOpen) {
-        setDrawerOpen(false)
-      }
-    },
-    [drawerOpen],
-  )
+  const [isMobile, setIsMobile] = useState(false)
+  const current = nav.find((item) => item.key === active)
 
   useEffect(() => {
-    if (mounted) {
-      document.addEventListener('keydown', handleKeyDown)
-      return () => document.removeEventListener('keydown', handleKeyDown)
+    const update = () => {
+      const mobile = window.matchMedia('(max-width: 767px)').matches
+      setIsMobile(mobile)
+      if (!mobile) setDrawerOpen(false)
     }
-  }, [mounted, handleKeyDown])
-
-  // Close drawer when resize to desktop
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setDrawerOpen(false)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
   }, [])
 
-  const toggleDrawer = () => setDrawerOpen((prev) => !prev)
-  const closeDrawer = () => setDrawerOpen(false)
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setDrawerOpen(false) }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [])
 
-  const sidebarClasses = `fixed inset-y-0 left-0 z-40 flex flex-col border-r border-surface-border bg-surface-base transition-all duration-300 ease-in-out w-sidebar-collapsed min-w-0`
-  const drawerClasses = `fixed inset-y-0 left-0 z-[60] flex flex-col border-r border-surface-border bg-surface-base shadow-xl w-sidebar-mobile min-w-0 transform transition-transform duration-300 ease-in-out ${
-    drawerOpen ? 'translate-x-0' : '-translate-x-full'
-  }`
-  const backdropClasses = `fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 ease-in-out ${
-    drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-  }`
+  const selectPage = useCallback((key: string) => {
+    onSelect(key)
+    setDrawerOpen(false)
+  }, [onSelect])
 
-  const contentClasses = `flex-1 overflow-y-auto min-w-0 ${
-    isMobile && !drawerOpen ? 'pl-0' : collapsed ? 'pl-sidebar-collapsed' : 'pl-sidebar-expanded'
-  } p-4 sm:p-6 lg:p-8`
+  const sidebar = (
+    <aside className={`app-sidebar ${collapsed && !isMobile ? 'app-sidebar-collapsed' : ''} ${isMobile ? `app-sidebar-mobile ${drawerOpen ? 'app-sidebar-open' : ''}` : ''}`}>
+      <div className="sidebar-brand">
+        <div className="brand-mark"><img src={logo} alt="Veltrunix" /></div>
+        {(!collapsed || isMobile) && <div className="brand-copy"><span>Veltrunix</span><small>LOCAL DEV ENVIRONMENT</small></div>}
+        {isMobile && <button className="icon-button sidebar-close" onClick={() => setDrawerOpen(false)} aria-label="Tutup navigasi">×</button>}
+      </div>
+      <nav className="sidebar-nav" aria-label="Navigasi utama">
+        {GROUPS.map((group) => {
+          const items = group.keys.map((key) => nav.find((item) => item.key === key)).filter((item): item is { key: string; label: string } => Boolean(item))
+          return items.length ? <section className="nav-group" key={group.title}>
+            {(!collapsed || isMobile) && <p className="nav-group-title">{group.title}</p>}
+            <div className="nav-group-items">{items.map((item) => <NavLink key={item.key} item={item} active={active} onSelect={selectPage} collapsed={collapsed && !isMobile} />)}</div>
+          </section> : null
+        })}
+      </nav>
+      <div className="sidebar-footer"><span className="sidebar-footer-dot" />{(!collapsed || isMobile) && <><span>Local environment</span><span className="sidebar-version">v0.1.0</span></>}</div>
+    </aside>
+  )
 
   return (
-    <>
-      <div className="flex h-screen overflow-hidden text-foreground bg-background">
-        {/* Backdrop for mobile drawer */}
-        {isMobile && drawerOpen && (
-          <div
-            className={backdropClasses}
-            onClick={closeDrawer}
-            aria-hidden="true"
-          />
-        )}
-
-        {/* Sidebar - always present on desktop, drawer on mobile */}
-        <aside
-          className={isMobile ? drawerClasses : sidebarClasses}
-          aria-label="Navigasi utama"
-        >
-          <div className="flex items-center h-header px-4 border-b border-surface-border">
-            {/* Hamburger button for mobile drawer */}
-            {isMobile && (
-              <button
-                onClick={toggleDrawer}
-                className="mr-2 p-2 rounded-md text-text-muted hover:text-text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                aria-label="Buka menu navigasi"
-                aria-expanded={drawerOpen}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-              </button>
-            )}
-            {/* Toggle collapse button for desktop */}
-            {!isMobile && (
-              <button
-                onClick={() => setCollapsed((c) => !c)}
-                className="mr-2 p-2 rounded-md text-text-muted hover:text-text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                aria-label="Toggle navigasi"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-              </button>
-            )}
-            <div className="flex items-center gap-3 overflow-hidden min-w-0">
-              <img
-                src={logo}
-                alt="Veltrunix Logo"
-                className="w-8 h-8 object-contain flex-shrink-0"
-                aria-hidden="true"
-              />
-              <span
-                className={`font-bold tracking-tight text-xl ${collapsed ? 'hidden' : 'block'} text-foreground whitespace-nowrap overflow-hidden text-ellipsis`}
-              >
-                Veltrunix
-              </span>
-            </div>
-            {/* Close drawer button (mobile only) */}
-            {isMobile && drawerOpen && (
-              <button
-                onClick={closeDrawer}
-                className="ml-auto p-2 rounded-md text-text-muted hover:text-text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                aria-label="Tutup menu navigasi"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
+    <div className="app-frame">
+      {isMobile && drawerOpen && <button className="sidebar-backdrop" onClick={() => setDrawerOpen(false)} aria-label="Tutup menu" />}
+      {sidebar}
+      <div className={`app-main ${!isMobile ? (collapsed ? 'app-main-collapsed' : 'app-main-expanded') : ''}`}>
+        <header className="app-topbar">
+          <div className="topbar-left">
+            <button className="icon-button mobile-menu-button" onClick={() => setDrawerOpen(true)} aria-label="Buka navigasi">☰</button>
+            {!isMobile && <button className="icon-button desktop-collapse-button" onClick={() => setCollapsed((value) => !value)} aria-label="Ciutkan navigasi">{collapsed ? '›' : '‹'}</button>}
+            <div className="topbar-breadcrumb"><span>Veltrunix</span><span className="breadcrumb-slash">/</span><strong>{current?.label ?? 'Workspace'}</strong></div>
           </div>
-          <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-1 min-w-0">
-            {nav.map((item) => (
-              <NavLink
-                key={item.key}
-                item={item}
-                active={active}
-                onSelect={onSelect}
-                collapsed={collapsed}
-              />
-            ))}
-          </nav>
-          <div className="mt-auto px-2 py-4 border-t border-surface-border min-w-0">
-            <NavLink
-              item={{ key: 'settings', label: 'Settings' }}
-              active={active}
-              onSelect={onSelect}
-              collapsed={collapsed}
-            />
-          </div>
-        </aside>
-        <div className={contentClasses}>{children}</div>
+          <div className="topbar-right"><span className="topbar-status"><i /> Local machine</span><span className="topbar-divider" /><span className="topbar-caption">Developer workspace</span></div>
+        </header>
+        <main className="page-content" key={active}>{children}</main>
+        <footer className="app-footer"><span>Veltrunix Local Development Environment</span><span>Built for your local workflow</span></footer>
       </div>
-    </>
+    </div>
   )
 }

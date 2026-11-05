@@ -94,6 +94,10 @@ Hasil bundle Windows berada di src-tauri/target/release/bundle/.
 
 Buat branch dari main, jalankan pemeriksaan frontend dan Rust, lalu ajukan Pull Request dengan ringkasan perubahan dan hasil tes.
 
+## Contributors
+
+Lihat [CONTRIBUTORS.md](CONTRIBUTORS.md) untuk daftar kontributor manusia dan AI yang membantu pengembangan Veltrunix. Atribusi AI menjelaskan bantuan yang diberikan dan tidak menyiratkan bahwa OpenAI adalah sponsor, pemilik, atau maintainer resmi repository ini.
+
 ## Lisensi
 
 MIT. Lihat LICENSE.
