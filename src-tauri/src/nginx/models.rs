@@ -9,18 +9,6 @@ pub enum NginxStatus {
     Error,
 }
 
-impl NginxStatus {
-    pub fn as_str(&self) -> &str {
-        match self {
-            NginxStatus::Installed => "Installed",
-            NginxStatus::NotFound => "Not found",
-            NginxStatus::Running => "Running",
-            NginxStatus::Stopped => "Stopped",
-            NginxStatus::Error => "Error",
-        }
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NginxInfo {
     pub name: String,
