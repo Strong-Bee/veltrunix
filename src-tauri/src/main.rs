@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod apache;
 mod commands;
 mod nginx;
 mod php;
@@ -9,6 +10,8 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             commands::general::get_app_info,
+            commands::apache::detect_apache_cmd,
+            commands::apache::control_apache_cmd,
             commands::nginx::detect_nginx_cmd,
             commands::nginx::get_nginx_status_cmd,
             commands::nginx::check_nginx_config_cmd,
