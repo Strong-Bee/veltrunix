@@ -44,6 +44,8 @@ pub enum RuntimeType {
     Java,
     Rust,
     Sqlite,
+    MySqlServer,
+    MariaDbServer,
 }
 
 impl RuntimeType {
@@ -64,6 +66,8 @@ impl RuntimeType {
             RuntimeType::Java => "java",
             RuntimeType::Rust => "rust",
             RuntimeType::Sqlite => "sqlite",
+            RuntimeType::MySqlServer => "mysql-server",
+            RuntimeType::MariaDbServer => "mariadb-server",
         }
     }
 
@@ -84,6 +88,8 @@ impl RuntimeType {
             RuntimeType::Java => vec!["-version"],
             RuntimeType::Rust => vec!["--version"],
             RuntimeType::Sqlite => vec!["--version"],
+            RuntimeType::MySqlServer => vec!["--version"],
+            RuntimeType::MariaDbServer => vec!["--version"],
         }
     }
 
@@ -104,6 +110,8 @@ impl RuntimeType {
             RuntimeType::Java => vec!["java.exe", "java"],
             RuntimeType::Rust => vec!["rustc.exe", "rustc"],
             RuntimeType::Sqlite => vec!["sqlite3.exe", "sqlite3"],
+            RuntimeType::MySqlServer => vec!["mysqld.exe", "mysqld"],
+            RuntimeType::MariaDbServer => vec!["mariadbd.exe", "mariadbd"],
         }
     }
 
@@ -124,6 +132,8 @@ impl RuntimeType {
             RuntimeType::Java,
             RuntimeType::Rust,
             RuntimeType::Sqlite,
+            RuntimeType::MySqlServer,
+            RuntimeType::MariaDbServer,
         ]
     }
 }
