@@ -59,26 +59,18 @@ export async function listVhosts(): Promise<VirtualHost[]> {
   return invoke<VirtualHost[]>('list_vhosts_cmd')
 }
 
-export async function createVhost(
-  req: CreateVHostRequest
-): Promise<VirtualHost> {
-  return invoke<VirtualHost>('create_vhost_cmd', req)
+export async function createVhost(req: CreateVHostRequest): Promise<VirtualHost> {
+  return invoke<VirtualHost>('create_vhost_cmd', { req })
 }
 
-export async function updateVhost(
-  req: UpdateVHostRequest
-): Promise<VirtualHost> {
-  return invoke<VirtualHost>('update_vhost_cmd', req)
+export async function updateVhost(req: UpdateVHostRequest): Promise<VirtualHost> {
+  return invoke<VirtualHost>('update_vhost_cmd', { req })
 }
 
-export async function deleteVhost(
-  req: DeleteVHostRequest
-): Promise<void> {
-  return invoke<void>('delete_vhost_cmd', req)
+export async function deleteVhost(req: DeleteVHostRequest): Promise<void> {
+  return invoke<void>('delete_vhost_cmd', { req })
 }
 
-export async function detectNginx(
-  req?: DetectNginxRequest
-): Promise<NginxInfo> {
-  return invoke<NginxInfo>('detect_nginx_cmd', { path: req?.path ?? null })
+export async function detectNginx(req?: DetectNginxRequest): Promise<NginxInfo> {
+  return invoke<NginxInfo>('detect_nginx_cmd', { req: { path: req?.path ?? null } })
 }
