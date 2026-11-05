@@ -71,11 +71,17 @@ fn is_valid_windows_path(path: &str) -> bool {
     if path.is_empty() {
         return false;
     }
-    let invalid_chars = ['<', '>', '"', '|', '?', '*', '
+    let invalid_chars = ['<', '>', '"', '|', '?', '*', '$', ';', '{', '}', '#'];
+    if path
+        .chars()
+        .any(|character| character.is_control() || invalid_chars.contains(&character))
+    {
         return false;
     }
     let chars: Vec<char> = path.chars().collect();
-    if chars.len() >= 2 && chars[1] == ':' && chars[0].is_ascii_alphabetic() {
+    if chars.len() >= 3 && chars[1] == ':' && chars[0].is_ascii_alphabetic()
+        && matches!(chars[2], '\\' | '/')
+    {
         return true;
     }
     if chars.len() >= 2 && chars[0] == '\\' && chars[1] == '\\' {
