@@ -133,7 +133,7 @@ export default function Services() {
   const nginxStatus = normalizeStatus(nginx?.status)
   const phpStatus = normalizeStatus(php?.status)
   const cgiStatus: ServiceState = cgi?.running ? 'Running' : cgiPath ? 'Stopped' : 'Not found'
-  const activeCount = [nginxStatus, cgiStatus].filter((status) => status === 'Running').length
+  const activeCount = [nginxStatus, normalizeStatus(apache?.status), cgiStatus].filter((status) => status === 'Running').length
 
   return (
     <div className="space-y-6">
@@ -153,7 +153,7 @@ export default function Services() {
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-text-muted">Layanan aktif yang terdeteksi</p>
-            <p className="mt-1 text-3xl font-semibold text-text-primary">{activeCount}<span className="ml-2 text-sm font-normal text-text-muted">/ 2 layanan yang sudah didukung</span></p>
+            <p className="mt-1 text-3xl font-semibold text-text-primary">{activeCount}<span className="ml-2 text-sm font-normal text-text-muted">/ 3 layanan yang sudah didukung</span></p>
             <p className="mt-1 text-xs text-text-muted">Status diperiksa langsung dari backend lokal.</p>
           </div>
           <Button variant="outline" onClick={() => void refresh()} disabled={busy}>{busy ? 'Memeriksa…' : 'Refresh status'}</Button>
