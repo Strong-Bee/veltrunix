@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { detectNginx, controlNginx, type NginxInfo } from '../nginx/api'
 import { detectPhp, detectPhpCgi, startPhpCgi, stopPhpCgi, getPhpCgiStatus, type PhpInfo, type PhcgiStatus } from '../php/api'
+import { detectApache, controlApache, type ApacheInfo } from './apache-api'
 
 type ServiceState = 'Running' | 'Stopped' | 'Installed' | 'Not found' | 'Error' | 'Unavailable'
 
@@ -42,6 +43,8 @@ function ServiceCard({ title, description, status, detail, children }: {
 
 export default function Services() {
   const [nginx, setNginx] = useState<NginxInfo | null>(null)
+  const [apache, setApache] = useState<ApacheInfo | null>(null)
+  const [preferredServer, setPreferredServer] = useState<'nginx' | 'apache'>('nginx')
   const [php, setPhp] = useState<PhpInfo | null>(null)
   const [cgiPath, setCgiPath] = useState<string | null>(null)
   const [cgi, setCgi] = useState<PhcgiStatus | null>(null)
@@ -54,14 +57,16 @@ export default function Services() {
     setError(null)
     const results = await Promise.allSettled([
       detectNginx(),
+      detectApache(),
       detectPhp(),
       detectPhpCgi(),
       getPhpCgiStatus(9000),
     ])
     if (results[0].status === 'fulfilled') setNginx(results[0].value)
-    if (results[1].status === 'fulfilled') setPhp(results[1].value)
-    if (results[2].status === 'fulfilled') setCgiPath(results[2].value)
-    if (results[3].status === 'fulfilled') setCgi(results[3].value)
+    if (results[1].status === 'fulfilled') setApache(results[1].value)
+    if (results[2].status === 'fulfilled') setPhp(results[2].value)
+    if (results[3].status === 'fulfilled') setCgiPath(results[3].value)
+    if (results[4].status === 'fulfilled') setCgi(results[4].value)
     const failed = results.find((result) => result.status === 'rejected')
     if (failed?.status === 'rejected') {
       setError(failed.reason instanceof Error ? failed.reason.message : 'Sebagian status layanan gagal dibaca.')
@@ -82,6 +87,22 @@ export default function Services() {
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kontrol Nginx gagal.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const runApache = async (action: 'start' | 'stop' | 'restart') => {
+    if (!apache?.path) return
+    setBusy(true)
+    setError(null)
+    setMessage(null)
+    try {
+      const result = await controlApache(apache.path, action)
+      setMessage(result)
+      await refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Kontrol Apache gagal.')
     } finally {
       setBusy(false)
     }
@@ -121,6 +142,14 @@ export default function Services() {
         description="Pusat kontrol stack lokal. Kelola layanan web dan runtime dari satu tempat."
       />
       <Card variant="elevated">
+        <CardHeader title="Web Server Pilihan" description="Pilih engine web server utama untuk stack lokal ini." />
+        <CardContent className="mt-3 flex flex-wrap gap-3">
+          <Button size="sm" variant={preferredServer === 'nginx' ? 'primary' : 'outline'} onClick={() => setPreferredServer('nginx')}>Gunakan Nginx</Button>
+          <Button size="sm" variant={preferredServer === 'apache' ? 'primary' : 'outline'} onClick={() => setPreferredServer('apache')}>Gunakan Apache</Button>
+          <p className="basis-full text-xs text-text-muted">Pilihan ini menetapkan preferensi server. Hentikan server lain sebelum menjalankan pilihan baru jika keduanya memakai port 80/443.</p>
+        </CardContent>
+      </Card>
+      <Card variant="elevated">
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-text-muted">Layanan aktif yang terdeteksi</p>
@@ -135,13 +164,22 @@ export default function Services() {
       {message && <div className="alert alert-success" role="status">{message}</div>}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <ServiceCard title="Nginx" description="HTTP server dan reverse proxy" status={nginxStatus} detail={nginx?.version ?? nginx?.path}>
+        <ServiceCard title={preferredServer === 'nginx' ? 'Nginx • Pilihan aktif' : 'Nginx'} description="HTTP server dan reverse proxy" status={nginxStatus} detail={nginx?.version ?? nginx?.path}>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={() => void runNginx('start')} disabled={busy || !nginx?.path || nginxStatus === 'Running'}>Start</Button>
             <Button size="sm" variant="outline" onClick={() => void runNginx('stop')} disabled={busy || !nginx?.path || nginxStatus !== 'Running'}>Stop</Button>
             <Button size="sm" variant="outline" onClick={() => void runNginx('restart')} disabled={busy || !nginx?.path}>Restart</Button>
           </div>
           {nginx?.error && <p className="text-xs text-destructive">{nginx.error}</p>}
+        </ServiceCard>
+
+        <ServiceCard title={preferredServer === 'apache' ? 'Apache • Pilihan aktif' : 'Apache'} description="Apache HTTP Server" status={normalizeStatus(apache?.status)} detail={apache?.version ?? apache?.path}>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" onClick={() => void runApache('start')} disabled={busy || !apache?.path || apache.status === 'Running'}>Start</Button>
+            <Button size="sm" variant="outline" onClick={() => void runApache('stop')} disabled={busy || !apache?.path || apache.status !== 'Running'}>Stop</Button>
+            <Button size="sm" variant="outline" onClick={() => void runApache('restart')} disabled={busy || !apache?.path}>Restart</Button>
+          </div>
+          {apache?.error && <p className="text-xs text-destructive">{apache.error}</p>}
         </ServiceCard>
 
         <ServiceCard title="PHP Runtime" description="CLI runtime dan konfigurasi PHP" status={phpStatus} detail={php?.version ?? php?.path}>
@@ -156,7 +194,7 @@ export default function Services() {
           </div>
         </ServiceCard>
 
-        {(['Apache', 'MySQL / MariaDB', 'PostgreSQL'] as const).map((name) => (
+        {(['MySQL / MariaDB', 'PostgreSQL'] as const).map((name) => (
           <ServiceCard key={name} title={name} description="Service adapter belum tersedia" status="Unavailable">
             <p className="text-xs text-text-muted">Belum diklaim terpasang atau berjalan. Integrasi service dan deteksi binary akan ditambahkan pada tahap berikutnya.</p>
           </ServiceCard>
@@ -166,8 +204,8 @@ export default function Services() {
       <Card variant="elevated">
         <CardHeader title="Catatan kompatibilitas" description="Veltrunix sedang dibangun bertahap menuju pengalaman XAMPP/Laragon." />
         <CardContent className="mt-3 space-y-2 text-sm text-text-muted">
-          <p>Kontrol yang aktif saat ini: Nginx dan PHP-CGI. PHP CLI hanya dideteksi sebagai runtime.</p>
-          <p>Apache, MySQL/MariaDB, PostgreSQL, project auto-detection, dan local domain automation belum diaktifkan. Kartu tersebut bukan indikator service yang sudah terpasang.</p>
+          <p>Deteksi dan kontrol dasar tersedia untuk Nginx dan Apache. PHP CLI dideteksi sebagai runtime dan PHP-CGI dapat dijalankan untuk FastCGI.</p>
+          <p>MySQL/MariaDB, PostgreSQL, project auto-detection, dan local domain automation belum diaktifkan. Jalankan satu web server pada port 80/443 dalam satu waktu.</p>
         </CardContent>
       </Card>
     </div>
