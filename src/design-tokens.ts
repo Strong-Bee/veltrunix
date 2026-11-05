@@ -6,31 +6,31 @@
 // Color palette - Dark theme optimized for developer tools
 export const colors = {
   // Base
-  background: '#0B1220',
+  background: '#0A0F18',
   foreground: '#E2E8F0',
 
   // Surface layers
   surface: {
-    base: '#111827',
-    elevated: '#161F33',
-    overlay: '#1E293B',
-    border: '#2D3A4F',
+    base: '#101925',
+    elevated: '#141F2D',
+    overlay: '#1A2938',
+    border: '#263647',
   },
 
   // Semantic colors
   primary: {
-    base: '#22C55E',      // Green 500 - main accent
-    hover: '#16A34A',     // Green 600
-    active: '#15803D',    // Green 700
-    muted: '#22C55E33',   // 20% opacity
-    onPrimary: '#0B1220',
+    base: '#55D6A0',      // Green 500 - main accent
+    hover: '#38BD87',     // Green 600
+    active: '#26996C',    // Green 700
+    muted: '#55D6A033',   // 20% opacity
+    onPrimary: '#0A0F18',
   },
 
   secondary: {
-    base: '#334155',      // Slate 700
-    hover: '#475569',     // Slate 600
-    active: '#64748B',    // Slate 500
-    onSecondary: '#F8FAFC',
+    base: '#304356',      // Slate 700
+    hover: '#40566A',     // Slate 600
+    active: '#718397',    // Slate 500
+    onSecondary: '#E7EDF5',
   },
 
   destructive: {
@@ -54,36 +54,36 @@ export const colors = {
   },
 
   success: {
-    base: '#22C55E',      // Green 500
-    hover: '#16A34A',     // Green 600
-    muted: '#22C55E33',   // 20% opacity
+    base: '#55D6A0',      // Green 500
+    hover: '#38BD87',     // Green 600
+    muted: '#55D6A033',   // 20% opacity
   },
 
   // Text colors
   text: {
-    primary: '#F8FAFC',      // slate-50
-    secondary: '#94A3B8',    // slate-400
-    muted: '#64748B',        // slate-500
-    inverse: '#0B1220',
-    link: '#22C55E',
-    linkHover: '#16A34A',
+    primary: '#E7EDF5',      // slate-50
+    secondary: '#9AABBA',    // slate-400
+    muted: '#718397',        // slate-500
+    inverse: '#0A0F18',
+    link: '#55D6A0',
+    linkHover: '#38BD87',
   },
 
   // Status colors (for badges, indicators)
   status: {
-    installed: { bg: '#22C55E33', text: '#22C55E', border: '#22C55E4D' },
-    running: { bg: '#22C55E33', text: '#22C55E', border: '#22C55E4D' },
+    installed: { bg: '#55D6A033', text: '#55D6A0', border: '#55D6A04D' },
+    running: { bg: '#55D6A033', text: '#55D6A0', border: '#55D6A04D' },
     stopped: { bg: '#F59E0B33', text: '#F59E0B', border: '#F59E0B4D' },
-    notFound: { bg: '#64748B33', text: '#94A3B8', border: '#64748B4D' },
+    notFound: { bg: '#71839733', text: '#9AABBA', border: '#7183974D' },
     error: { bg: '#EF444433', text: '#EF4444', border: '#EF44444D' },
-    active: { bg: '#22C55E33', text: '#22C55E', border: '#22C55E4D' },
-    inactive: { bg: '#64748B33', text: '#94A3B8', border: '#64748B4D' },
+    active: { bg: '#55D6A033', text: '#55D6A0', border: '#55D6A04D' },
+    inactive: { bg: '#71839733', text: '#9AABBA', border: '#7183974D' },
   },
 
   // Focus ring
   focus: {
-    ring: '#22C55E',
-    offset: '#0B1220',
+    ring: '#55D6A0',
+    offset: '#0A0F18',
   },
 } as const;
 
@@ -153,7 +153,7 @@ export const shadows = {
   lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
   xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
   inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
-  focus: '0 0 0 2px #22C55E',
+  focus: '0 0 0 2px #55D6A0',
 } as const;
 
 // Transition durations
