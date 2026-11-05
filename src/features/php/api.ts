@@ -66,3 +66,7 @@ export async function stopAllPhpCgi(): Promise<void> {
 export async function controlPhpCgi(req: PhpControlRequest): Promise<string> {
   return invoke<string>('control_php_cgi_cmd', { req })
 }
+
+export async function detectPhpCgi(): Promise<string | null> {
+  return invoke<string | null>('detect_php_cgi_cmd')
+}
