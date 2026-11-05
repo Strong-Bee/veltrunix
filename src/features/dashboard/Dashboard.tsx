@@ -1,210 +1,114 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getAppInfo } from '../../lib/tauri'
 import { detectRuntimes } from '../runtimes/api'
 import { detectNginx } from '../nginx/api'
+import { detectApache } from '../services/apache-api'
 import { listVhosts } from '../vhosts/api'
 import { PageHeader } from '../../components/ui/PageHeader'
-import { Card, CardHeader, CardContent } from '../../components/ui/Card'
+import { Card, CardContent, CardHeader } from '../../components/ui/Card'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { Button } from '../../components/ui/Button'
-import { EmptyState } from '../../components/ui/EmptyState'
 
 interface ServiceStatus {
   label: string
   status: 'Installed' | 'Not found' | 'Running' | 'Stopped' | 'Error'
   version: string | null
+  detail: string
 }
 
 export default function Dashboard() {
-  const [info, setInfo] = useState<{ name: string; version: string; platform: string } | null>(
-    null,
-  )
+  const [info, setInfo] = useState<{ name: string; version: string; platform: string } | null>(null)
   const [services, setServices] = useState<ServiceStatus[]>([])
+  const [vhostCount, setVhostCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [lastChecked, setLastChecked] = useState<Date | null>(null)
 
   const fetchInfo = useCallback(async () => {
     setLoading(true)
     setError(null)
-    try {
-      const [appInfo, runtimes, nginx, vhosts] = await Promise.allSettled([
-        getAppInfo(),
-        detectRuntimes(),
-        detectNginx(),
-        listVhosts(),
-      ])
-
-      if (appInfo.status === 'fulfilled') {
-        setInfo(appInfo.value)
+    const results = await Promise.allSettled([getAppInfo(), detectRuntimes(), detectNginx(), detectApache(), listVhosts()])
+    if (results[0].status === 'fulfilled') setInfo(results[0].value)
+    const rows: ServiceStatus[] = []
+    if (results[1].status === 'fulfilled') {
+      for (const [label, key] of [['PHP', 'php'], ['Node.js', 'node'], ['Python', 'python']] as const) {
+        const item = results[1].value.find((runtime) => runtime.name === key)
+        rows.push({ label, status: item?.status ?? 'Not found', version: item?.version ?? null, detail: item?.path ?? 'Runtime belum terdeteksi' })
       }
-
-      const serviceList: ServiceStatus[] = []
-
-      if (runtimes.status === 'fulfilled') {
-        const php = runtimes.value.find((r) => r.name === 'php')
-        serviceList.push({
-          label: 'PHP',
-          status: php?.status ?? 'Not found',
-          version: php?.version ?? null,
-        })
-      }
-
-      if (nginx.status === 'fulfilled') {
-        serviceList.push({
-          label: 'Nginx',
-          status: nginx.value.status,
-          version: nginx.value.version ?? null,
-        })
-      }
-
-      if (vhosts.status === 'fulfilled') {
-        serviceList.push({
-          label: 'Virtual Hosts',
-          status: vhosts.value.length > 0 ? 'Installed' : 'Not found',
-          version: null,
-        })
-      }
-
-      setServices(serviceList)
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Gagal memuat informasi dari backend.',
-      )
-    } finally {
-      setLoading(false)
     }
+    if (results[2].status === 'fulfilled') rows.push({ label: 'Nginx', status: results[2].value.status, version: results[2].value.version ?? null, detail: results[2].value.path ?? 'Binary belum ditemukan' })
+    if (results[3].status === 'fulfilled') rows.push({ label: 'Apache', status: results[3].value.status === 'Installed' ? 'Installed' : results[3].value.status === 'Running' ? 'Running' : results[3].value.status === 'Error' ? 'Error' : 'Not found', version: results[3].value.version ?? null, detail: results[3].value.path ?? 'Binary belum ditemukan' })
+    if (results[4].status === 'fulfilled') setVhostCount(results[4].value.length)
+    const failures = results.filter((result) => result.status === 'rejected').length
+    if (failures) setError(`${failures} pemeriksaan tidak dapat diselesaikan. Pastikan backend Veltrunix berjalan.`)
+    setServices(rows)
+    setLastChecked(new Date())
+    setLoading(false)
   }, [])
 
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Dashboard"
-        description="Veltrunix Local Development Environment — Status lingkungan pengembangan web lokal."
-      />
+  useEffect(() => { void fetchInfo() }, [fetchInfo])
+  const installedCount = useMemo(() => services.filter((item) => item.status === 'Installed' || item.status === 'Running').length, [services])
+  const runningCount = useMemo(() => services.filter((item) => item.status === 'Running').length, [services])
 
-      {error && (
-        <div className="alert alert-error">
-          {error}
-        </div>
-      )}
+  const navigate = (key: string) => window.dispatchEvent(new CustomEvent('veltrunix:navigate', { detail: key }))
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  return <div className="dashboard-page">
+    <PageHeader title="Dashboard" description="Ringkasan lingkungan development lokal dan status komponen Anda."
+      action={<Button variant="outline" size="sm" onClick={() => void fetchInfo()} disabled={loading}>{loading ? 'Memeriksa…' : '↻  Refresh status'}</Button>} />
+    {error && <div className="alert alert-error" role="alert">{error}</div>}
+
+    <section className="welcome-panel">
+      <div className="welcome-copy">
+        <span className="eyebrow"><i /> YOUR LOCAL WORKSPACE</span>
+        <h2>Build something<br /><span>remarkable.</span></h2>
+        <p>Semua runtime, web server, dan project lokal dalam satu control center.</p>
+        <div className="welcome-meta"><span className="welcome-meta-dot" /> {info?.platform ?? 'Local environment'} <span>·</span> Veltrunix {info?.version ?? '0.1.0'}</div>
+      </div>
+      <div className="welcome-visual" aria-hidden="true">
+        <div className="orbit orbit-one" /><div className="orbit orbit-two" />
+        <div className="visual-core"><span>V</span></div>
+        <span className="orbit-chip chip-node">NODE</span><span className="orbit-chip chip-php">PHP</span><span className="orbit-chip chip-db">DB</span>
+      </div>
+    </section>
+
+    <section className="metric-grid" aria-label="Ringkasan status">
+      <Card variant="elevated"><CardContent className="metric-card"><span className="metric-icon metric-icon-green">⌁</span><div><p>Komponen tersedia</p><strong>{installedCount}<small> / {services.length || 5}</small></strong><span className="metric-foot">Runtime & web server</span></div></CardContent></Card>
+      <Card variant="elevated"><CardContent className="metric-card"><span className="metric-icon metric-icon-blue">◉</span><div><p>Service berjalan</p><strong>{runningCount}</strong><span className="metric-foot">Status saat ini</span></div></CardContent></Card>
+      <Card variant="elevated"><CardContent className="metric-card"><span className="metric-icon metric-icon-violet">▤</span><div><p>Virtual hosts</p><strong>{vhostCount}</strong><span className="metric-foot">Konfigurasi lokal</span></div></CardContent></Card>
+      <Card variant="elevated"><CardContent className="metric-card"><span className="metric-icon metric-icon-amber">◷</span><div><p>Last checked</p><strong className="metric-time">{lastChecked ? lastChecked.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</strong><span className="metric-foot">{lastChecked ? lastChecked.toLocaleDateString() : 'Belum diperiksa'}</span></div></CardContent></Card>
+    </section>
+
+    <section className="dashboard-columns">
+      <Card variant="elevated">
+        <div className="dashboard-card-heading"><div><CardHeader title="Environment overview" description="Status komponen development yang terdeteksi." /></div><span className="live-label"><i /> LIVE</span></div>
+        <CardContent className="environment-list">
+          {services.map((service) => <div className="environment-row" key={service.label}>
+            <div className="environment-symbol">{service.label === 'PHP' ? 'php' : service.label === 'Node.js' ? 'JS' : service.label === 'Python' ? 'Py' : service.label === 'Nginx' ? 'N' : 'A'}</div>
+            <div className="environment-info"><strong>{service.label}</strong><span title={service.detail}>{service.version ?? service.detail}</span></div>
+            <StatusBadge status={service.status} variant="runtime" />
+          </div>)}
+          {!services.length && <p className="text-sm text-text-muted py-6">{loading ? 'Memuat status environment…' : 'Belum ada data environment.'}</p>}
+        </CardContent>
+      </Card>
+      <div className="dashboard-side-stack">
         <Card variant="elevated">
-          <CardHeader title="Informasi aplikasi" />
-          <CardContent className="mt-4 flex flex-col gap-3">
-            {loading && (
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                <span className="text-sm text-text-muted">Memuat dari backend…</span>
-              </div>
-            )}
-            {info && (
-              <>
-                <div className="flex items-center justify-between py-2 border-b border-surface-border last:border-0">
-                  <span className="text-sm text-text-muted">Nama</span>
-                  <span className="text-sm font-mono text-text-primary">{info.name}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-surface-border last:border-0">
-                  <span className="text-sm text-text-muted">Versi</span>
-                  <span className="text-sm font-mono text-text-primary">{info.version}</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-text-muted">Platform</span>
-                  <span className="text-sm font-mono text-text-primary">{info.platform}</span>
-                </div>
-              </>
-            )}
-            {!info && !loading && !error && (
-              <Button variant="outline" size="sm" onClick={fetchInfo}>
-                Periksa informasi aplikasi
-              </Button>
-            )}
+          <CardHeader title="Quick access" description="Buka modul yang sering digunakan." />
+          <CardContent className="quick-access-list">
+            <button onClick={() => navigate('services')}><span className="quick-icon">⇄</span><span><strong>Service Center</strong><small>Start & stop web server</small></span><b>→</b></button>
+            <button onClick={() => navigate('runtimes')}><span className="quick-icon">⌘</span><span><strong>Runtime Manager</strong><small>Inspect installed toolchains</small></span><b>→</b></button>
+            <button onClick={() => navigate('vhosts')}><span className="quick-icon">▣</span><span><strong>Virtual Hosts</strong><small>Manage local domains</small></span><b>→</b></button>
           </CardContent>
         </Card>
-
         <Card variant="elevated">
-          <CardHeader title="Status layanan" />
-          <CardContent className="mt-4">
-            <div className="space-y-3">
-              {services.map((svc) => (
-                <div
-                  key={svc.label}
-                  className="flex items-center justify-between py-3 border-b border-surface-border last:border-0"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-text-primary">{svc.label}</p>
-                    {svc.version && (
-                      <p className="text-xs text-text-muted font-mono">
-                        {svc.version}
-                      </p>
-                    )}
-                  </div>
-                  <StatusBadge status={svc.status} variant="nginx" />
-                </div>
-              ))}
-              {services.length === 0 && !loading && !error && (
-                <p className="text-sm text-text-muted">
-                  Belum ada pemeriksaan yang dilakukan.
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="elevated">
-          <CardHeader title="Aksi cepat" />
-          <CardContent className="mt-4 space-y-3">
-            <Button variant="primary" size="sm" className="w-full sm:w-auto" onClick={fetchInfo}>
-              Deteksi Semua Runtime
-            </Button>
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
-              Deteksi Nginx
-            </Button>
-            <Button variant="ghost" size="sm" className="w-full sm:w-auto">
-              Kelola Virtual Host
-            </Button>
+          <CardHeader title="Workspace details" />
+          <CardContent className="workspace-details">
+            <div><span>Application</span><strong>{info?.name ?? 'Veltrunix'}</strong></div>
+            <div><span>Version</span><strong>{info?.version ?? '0.1.0'}</strong></div>
+            <div><span>Platform</span><strong>{info?.platform ?? 'Windows'}</strong></div>
           </CardContent>
         </Card>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card variant="elevated">
-          <CardHeader
-            title="Runtime Manager"
-            description="Deteksi dan manajemen versi runtime pengembangan web lokal (PHP, Node.js, npm, Composer, Git)."
-          />
-          <CardContent className="mt-4">
-            <EmptyState
-              title="Belum ada data runtime"
-              description="Klik tombol di bawah untuk memulai deteksi runtime dari backend."
-              action={
-                <Button variant="primary" size="sm" onClick={fetchInfo}>
-                  Deteksi Runtime
-                </Button>
-              }
-            />
-          </CardContent>
-        </Card>
-        <Card variant="elevated">
-          <CardHeader
-            title="Layanan & Port"
-            description="Pemeriksaan port, PID proses, dan kontrol start/stop layanan akan ditampilkan di sini."
-          />
-          <CardContent className="mt-4">
-            <EmptyState
-              title="Belum diimplementasikan"
-              description="Modul layanan akan tersedia pada tahap pengembangan berikutnya."
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
+    </section>
+    <p className="dashboard-note">Status diperoleh dari pemeriksaan backend lokal. Komponen berstatus Not found perlu dipasang atau ditambahkan ke PATH.</p>
+  </div>
 }
