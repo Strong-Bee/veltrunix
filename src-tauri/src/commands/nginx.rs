@@ -1,7 +1,7 @@
 use tauri::command;
 
 use crate::nginx::detector::{check_nginx_config, detect_nginx};
-use crate::nginx::manager::control_nginx;
+use crate::nginx::manager::{control_nginx, get_nginx_status};
 use crate::nginx::models::{
     CreateVHostRequest, DeleteVHostRequest, DetectNginxRequest, NginxControlRequest,
     UpdateVHostRequest,
@@ -15,7 +15,9 @@ pub fn detect_nginx_cmd(req: DetectNginxRequest) -> crate::nginx::models::NginxI
 
 #[command]
 pub fn get_nginx_status_cmd(path: String) -> crate::nginx::models::NginxInfo {
-    detect_nginx(Some(path))
+    let mut info = detect_nginx(Some(path.clone()));
+    info.status = get_nginx_status(&path);
+    info
 }
 
 #[command]
