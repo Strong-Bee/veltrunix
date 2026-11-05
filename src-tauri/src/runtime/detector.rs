@@ -238,7 +238,7 @@ mod tests {
 
     #[test]
     fn test_runtime_type_all_count() {
-        assert_eq!(RuntimeType::all().len(), 5);
+        assert_eq!(RuntimeType::all().len(), 17);
     }
 
     #[test]
@@ -279,9 +279,9 @@ mod tests {
     }
 
     #[test]
-    fn test_detect_all_runtimes_returns_five() {
+    fn test_detect_all_runtimes_returns_seventeen() {
         let results = detect_all_runtimes();
-        assert_eq!(results.len(), 18);
+        assert_eq!(results.len(), 17);
         let names: Vec<&str> = results.iter().map(|r| r.name.as_str()).collect();
         assert!(names.contains(&"php"));
         assert!(names.contains(&"node"));
