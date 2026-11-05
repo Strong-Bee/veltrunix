@@ -34,6 +34,18 @@ pub enum RuntimeType {
     Npm,
     Composer,
     Git,
+    Python,
+    MySql,
+    MariaDb,
+    PostgreSql,
+    Redis,
+    Docker,
+    Go,
+    Java,
+    Rust,
+    Sqlite,
+    MySqlServer,
+    MariaDbServer,
 }
 
 impl RuntimeType {
@@ -44,6 +56,18 @@ impl RuntimeType {
             RuntimeType::Npm => "npm",
             RuntimeType::Composer => "composer",
             RuntimeType::Git => "git",
+            RuntimeType::Python => "python",
+            RuntimeType::MySql => "mysql",
+            RuntimeType::MariaDb => "mariadb",
+            RuntimeType::PostgreSql => "postgresql",
+            RuntimeType::Redis => "redis",
+            RuntimeType::Docker => "docker",
+            RuntimeType::Go => "go",
+            RuntimeType::Java => "java",
+            RuntimeType::Rust => "rust",
+            RuntimeType::Sqlite => "sqlite",
+            RuntimeType::MySqlServer => "mysql-server",
+            RuntimeType::MariaDbServer => "mariadb-server",
         }
     }
 
@@ -54,6 +78,18 @@ impl RuntimeType {
             RuntimeType::Npm => vec!["--version"],
             RuntimeType::Composer => vec!["--version"],
             RuntimeType::Git => vec!["--version"],
+            RuntimeType::Python => vec!["--version"],
+            RuntimeType::MySql => vec!["--version"],
+            RuntimeType::MariaDb => vec!["--version"],
+            RuntimeType::PostgreSql => vec!["--version"],
+            RuntimeType::Redis => vec!["--version"],
+            RuntimeType::Docker => vec!["--version"],
+            RuntimeType::Go => vec!["version"],
+            RuntimeType::Java => vec!["-version"],
+            RuntimeType::Rust => vec!["--version"],
+            RuntimeType::Sqlite => vec!["--version"],
+            RuntimeType::MySqlServer => vec!["--version"],
+            RuntimeType::MariaDbServer => vec!["--version"],
         }
     }
 
@@ -64,6 +100,18 @@ impl RuntimeType {
             RuntimeType::Npm => vec!["npm.exe", "npm", "npm.cmd"],
             RuntimeType::Composer => vec!["composer.exe", "composer", "composer.bat"],
             RuntimeType::Git => vec!["git.exe", "git"],
+            RuntimeType::Python => vec!["python.exe", "python", "python3.exe", "py.exe"],
+            RuntimeType::MySql => vec!["mysql.exe", "mysql"],
+            RuntimeType::MariaDb => vec!["mariadb.exe", "mariadb"],
+            RuntimeType::PostgreSql => vec!["psql.exe", "psql"],
+            RuntimeType::Redis => vec!["redis-server.exe", "redis-server"],
+            RuntimeType::Docker => vec!["docker.exe", "docker"],
+            RuntimeType::Go => vec!["go.exe", "go"],
+            RuntimeType::Java => vec!["java.exe", "java"],
+            RuntimeType::Rust => vec!["rustc.exe", "rustc"],
+            RuntimeType::Sqlite => vec!["sqlite3.exe", "sqlite3"],
+            RuntimeType::MySqlServer => vec!["mysqld.exe", "mysqld"],
+            RuntimeType::MariaDbServer => vec!["mariadbd.exe", "mariadbd"],
         }
     }
 
@@ -74,6 +122,18 @@ impl RuntimeType {
             RuntimeType::Npm,
             RuntimeType::Composer,
             RuntimeType::Git,
+            RuntimeType::Python,
+            RuntimeType::MySql,
+            RuntimeType::MariaDb,
+            RuntimeType::PostgreSql,
+            RuntimeType::Redis,
+            RuntimeType::Docker,
+            RuntimeType::Go,
+            RuntimeType::Java,
+            RuntimeType::Rust,
+            RuntimeType::Sqlite,
+            RuntimeType::MySqlServer,
+            RuntimeType::MariaDbServer,
         ]
     }
 }

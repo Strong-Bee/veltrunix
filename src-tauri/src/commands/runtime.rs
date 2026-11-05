@@ -22,6 +22,18 @@ pub fn detect_runtime_by_name(req: DetectRuntimeRequest) -> crate::runtime::mode
         "npm" => RuntimeType::Npm,
         "composer" => RuntimeType::Composer,
         "git" => RuntimeType::Git,
+        "python" => RuntimeType::Python,
+        "mysql" => RuntimeType::MySql,
+        "mariadb" => RuntimeType::MariaDb,
+        "postgresql" => RuntimeType::PostgreSql,
+        "redis" => RuntimeType::Redis,
+        "docker" => RuntimeType::Docker,
+        "go" => RuntimeType::Go,
+        "java" => RuntimeType::Java,
+        "rust" => RuntimeType::Rust,
+        "sqlite" => RuntimeType::Sqlite,
+        "mysql-server" => RuntimeType::MySqlServer,
+        "mariadb-server" => RuntimeType::MariaDbServer,
         _ => {
             return crate::runtime::models::RuntimeInfo {
                 name: req.name,

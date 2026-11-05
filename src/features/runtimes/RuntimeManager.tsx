@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { RUNTIME_TYPES, RuntimeInfo } from './types'
 import { detectRuntimes } from './api'
 import { PageHeader } from '../../components/ui/PageHeader'
@@ -27,11 +27,13 @@ export default function RuntimeManager() {
     }
   }, [])
 
+  useEffect(() => { void refresh() }, [refresh])
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Runtime Manager"
-        description="Deteksi dan manajemen versi runtime pengembangan web lokal (PHP, Node.js, npm, Composer, Git)."
+        description="Deteksi toolchain lokal: PHP, Python, Node.js, database CLI, Docker, Go, Java, Rust, dan utilitas developer."
         action={
           <Button
             variant="primary"
@@ -69,7 +71,7 @@ export default function RuntimeManager() {
             <table className="table">
               <thead>
                 <tr className="border-b border-surface-border">
-                  <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Runtime</th>
+                  <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Runtime / Tool</th>
                   <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Status</th>
                   <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Versi</th>
                   <th className="pb-3 font-medium text-text-muted uppercase text-xs tracking-wider">Path</th>
