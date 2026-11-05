@@ -32,6 +32,8 @@ pub fn detect_runtime_by_name(req: DetectRuntimeRequest) -> crate::runtime::mode
         "java" => RuntimeType::Java,
         "rust" => RuntimeType::Rust,
         "sqlite" => RuntimeType::Sqlite,
+        "mysql-server" => RuntimeType::MySqlServer,
+        "mariadb-server" => RuntimeType::MariaDbServer,
         _ => {
             return crate::runtime::models::RuntimeInfo {
                 name: req.name,
