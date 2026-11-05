@@ -9,18 +9,6 @@ pub enum PhpStatus {
     Error,
 }
 
-impl PhpStatus {
-    pub fn as_str(&self) -> &str {
-        match self {
-            PhpStatus::Installed => "Installed",
-            PhpStatus::NotFound => "Not found",
-            PhpStatus::Running => "Running",
-            PhpStatus::Stopped => "Stopped",
-            PhpStatus::Error => "Error",
-        }
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PhpInfo {
     pub name: String,

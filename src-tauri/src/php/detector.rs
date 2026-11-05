@@ -61,24 +61,23 @@ pub fn find_php_in_standard_locations(exe_name: &str) -> Option<String> {
 }
 
 pub fn find_php_ini(exe_path: &str) -> Option<String> {
-    match run_php_command(exe_path, &["-i"], CONFIG_TIMEOUT_SECS) {
-        Ok((stdout, _, code)) => {
-            if code == 0 {
-                for line in stdout.lines() {
-                    let line = line.trim();
-                    if line.starts_with("Loaded Configuration File") {
-                        let parts: Vec<&str> = line.splitn(2, "=>").collect();
-                        if parts.len() >= 2 {
-                            let ini_path = parts[1].trim();
-                            if !ini_path.is_empty() && ini_path != "(none)" {
-                                return Some(ini_path.to_string());
-                            }
+    if let Ok((stdout, _, code)) =
+        run_php_command(exe_path, &["-i"], CONFIG_TIMEOUT_SECS)
+    {
+        if code == 0 {
+            for line in stdout.lines() {
+                let line = line.trim();
+                if line.starts_with("Loaded Configuration File") {
+                    let parts: Vec<&str> = line.splitn(2, "=>").collect();
+                    if parts.len() >= 2 {
+                        let ini_path = parts[1].trim();
+                        if !ini_path.is_empty() && ini_path != "(none)" {
+                            return Some(ini_path.to_string());
                         }
                     }
                 }
             }
         }
-        Err(_) => {}
     }
     // Fallback: look for php.ini next to php.exe
     if let Some(dir) = Path::new(exe_path).parent() {
@@ -91,31 +90,30 @@ pub fn find_php_ini(exe_path: &str) -> Option<String> {
 }
 
 pub fn extract_php_extensions(exe_path: &str) -> Vec<String> {
-    match run_php_command(exe_path, &["-m"], CONFIG_TIMEOUT_SECS) {
-        Ok((stdout, _, code)) => {
-            if code == 0 {
-                let mut extensions = Vec::new();
-                let mut in_extensions = false;
-                for line in stdout.lines() {
-                    let line = line.trim();
-                    if line == "[PHP Modules]" {
-                        in_extensions = true;
-                        continue;
-                    }
-                    if line.starts_with('[') && line.ends_with(']') {
-                        if in_extensions {
-                            break;
-                        }
-                        continue;
-                    }
-                    if in_extensions && !line.is_empty() {
-                        extensions.push(line.to_string());
-                    }
+    if let Ok((stdout, _, code)) =
+        run_php_command(exe_path, &["-m"], CONFIG_TIMEOUT_SECS)
+    {
+        if code == 0 {
+            let mut extensions = Vec::new();
+            let mut in_extensions = false;
+            for line in stdout.lines() {
+                let line = line.trim();
+                if line == "[PHP Modules]" {
+                    in_extensions = true;
+                    continue;
                 }
-                return extensions;
+                if line.starts_with('[') && line.ends_with(']') {
+                    if in_extensions {
+                        break;
+                    }
+                    continue;
+                }
+                if in_extensions && !line.is_empty() {
+                    extensions.push(line.to_string());
+                }
             }
+            return extensions;
         }
-        Err(_) => {}
     }
     Vec::new()
 }
@@ -272,21 +270,9 @@ pub fn detect_php(req: DetectPhpRequest) -> PhpInfo {
     let extensions = extract_php_extensions(&exe_path);
 
     // Check if php-cgi.exe exists next to php.exe
-    let php_cgi_path = Path::new(&exe_path)
-        .parent()
-        .and_then(|dir| Some(dir.join("php-cgi.exe")))
-        .filter(|p| p.exists() && p.is_file())
-        .and_then(|p| p.to_str().map(|s| s.to_string()));
-
-    let has_cgi = php_cgi_path.is_some();
-
     PhpInfo {
         name: "php".to_string(),
-        status: if has_cgi {
-            PhpStatus::Installed
-        } else {
-            PhpStatus::Installed
-        },
+        status: PhpStatus::Installed,
         version: Some(version),
         path: Some(exe_path),
         php_ini_path,
@@ -296,7 +282,7 @@ pub fn detect_php(req: DetectPhpRequest) -> PhpInfo {
 }
 
 pub fn check_php_port_in_use(port: u16) -> bool {
-    if let Ok(output) = Command::new("netstat").args(&["-ano"]).output() {
+    if let Ok(output) = Command::new("netstat").args(["-ano"]).output() {
         let output_str = String::from_utf8_lossy(&output.stdout);
         let port_str = port.to_string();
         for line in output_str.lines() {

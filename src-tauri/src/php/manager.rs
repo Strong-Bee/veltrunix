@@ -13,9 +13,6 @@ lazy_static! {
     static ref PHCGI_PROCESSES: Mutex<HashMap<u16, Child>> = Mutex::new(HashMap::new());
 }
 
-const CONTROL_TIMEOUT_SECS: u64 = 15;
-const HEALTH_CHECK_TIMEOUT_SECS: u64 = 5;
-
 pub fn start_php_cgi(
     exe_path: &str,
     port: u16,
@@ -44,7 +41,7 @@ pub fn start_php_cgi(
 
     // Mulai proses php-cgi.exe
     let child = std::process::Command::new(exe_path)
-        .args(&["-b", &format!("{}:{}", address, port)])
+        .args(["-b", &format!("{}:{}", address, port)])
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .spawn()
@@ -122,7 +119,7 @@ pub fn get_php_cgi_status(port: u16) -> PhcgiStatus {
     PhcgiStatus {
         running,
         port: if running { Some(port) } else { None },
-        pid: process_info.as_ref().and_then(|p| Some(p.pid)),
+        pid: process_info.as_ref().map(|p| p.pid),
         address: process_info.as_ref().map(|p| p.address.clone()),
         error: if running {
             None
@@ -155,17 +152,14 @@ pub fn list_php_cgi_processes() -> Vec<PhcgiProcessInfo> {
 
 pub fn check_health(address: &str, port: u16) -> bool {
     let addr = format!("{}:{}", address, port);
-    match std::thread::spawn(move || {
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(async {
-            TcpStream::connect(&addr).await.is_ok()
-        })
+    std::thread::spawn(move || {
+        let Ok(rt) = tokio::runtime::Runtime::new() else {
+            return false;
+        };
+        rt.block_on(async { TcpStream::connect(&addr).await.is_ok() })
     })
     .join()
-    {
-        Ok(result) => result,
-        Err(_) => false,
-    }
+    .unwrap_or_default()
 }
 
 pub fn stop_all_php_cgi() -> Result<(), String> {

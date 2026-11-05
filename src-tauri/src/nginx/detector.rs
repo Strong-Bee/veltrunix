@@ -98,7 +98,7 @@ fn extract_version(output: &str) -> String {
     for line in output.lines() {
         let line = line.trim();
         if line.starts_with("nginx/") {
-            return line["nginx/".len()..].trim().to_string();
+            return line.strip_prefix("nginx/").unwrap_or(line).trim().to_string();
         }
     }
     let first_line = output.lines().next().unwrap_or(output);
@@ -134,18 +134,16 @@ fn extract_version(output: &str) -> String {
 }
 
 fn find_nginx_config(exe_path: &str) -> Option<String> {
-    match run_nginx_command(exe_path, &["-V"], CONFIG_TIMEOUT_SECS) {
-        Ok((stdout, _, code)) => {
-            if code == 0 {
-                for line in stdout.lines() {
-                    let line = line.trim();
-                    if line.starts_with("--conf-path=") {
-                        return Some(line["--conf-path=".len()..].trim().to_string());
-                    }
+    if let Ok((stdout, _, code)) =
+        run_nginx_command(exe_path, &["-V"], CONFIG_TIMEOUT_SECS)
+    {
+        if code == 0 {
+            for line in stdout.lines() {
+                if let Some(config_path) = line.trim().strip_prefix("--conf-path=") {
+                    return Some(config_path.trim().to_string());
                 }
             }
         }
-        Err(_) => {}
     }
     if let Some(dir) = Path::new(exe_path).parent() {
         let conf = dir.join("..").join("conf").join("nginx.conf");
@@ -180,7 +178,7 @@ pub fn detect_nginx(explicit_path: Option<String>) -> NginxInfo {
             }
         }
         None => match find_executable_in_path("nginx.exe")
-            .or_else(|| find_nginx_in_standard_locations())
+            .or_else(find_nginx_in_standard_locations)
         {
             Some(p) => p,
             None => {
@@ -266,7 +264,7 @@ pub fn check_nginx_config(exe_path: &str) -> NginxConfigCheck {
 }
 
 pub fn check_port_in_use(port: u16) -> bool {
-    if let Ok(output) = Command::new("netstat").args(&["-ano"]).output() {
+    if let Ok(output) = Command::new("netstat").args(["-ano"]).output() {
         let output_str = String::from_utf8_lossy(&output.stdout);
         let port_str = port.to_string();
         for line in output_str.lines() {
@@ -281,23 +279,13 @@ pub fn check_port_in_use(port: u16) -> bool {
 
 pub fn is_nginx_running() -> bool {
     if let Ok(output) = Command::new("tasklist")
-        .args(&["/FI", "IMAGENAME eq nginx.exe"])
+        .args(["/FI", "IMAGENAME eq nginx.exe"])
         .output()
     {
         let output_str = String::from_utf8_lossy(&output.stdout);
         return output_str.contains("nginx.exe");
     }
     false
-}
-
-pub fn get_nginx_status(exe_path: &str) -> NginxStatus {
-    if is_nginx_running() {
-        NginxStatus::Running
-    } else if Path::new(exe_path).exists() {
-        NginxStatus::Stopped
-    } else {
-        NginxStatus::NotFound
-    }
 }
 
 // ---------------------------------------------------------------------------
