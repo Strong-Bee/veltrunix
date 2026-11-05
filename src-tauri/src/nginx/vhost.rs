@@ -188,32 +188,31 @@ pub fn list_vhosts() -> Vec<VirtualHost> {
     if let Ok(entries) = fs::read_dir(VHOSTS_DIR) {
         for entry in entries.flatten() {
             let path = entry.path();
-            if path.extension().map_or(false, |e| e == "conf") {
-                if let Some(name) = path.file_stem().and_then(|n| n.to_str()) {
-                    if let Ok(content) = fs::read_to_string(&path) {
-                        let domain = extract_domain_from_config(&content)
-                            .unwrap_or_else(|| name.to_string());
-                        let root = extract_root_from_config(&content).unwrap_or_default();
-                        let port = extract_port_from_config(&content).unwrap_or(80);
-                        let php_enabled = content.contains("fastcgi_pass");
-                        let (fastcgi_address, fastcgi_port) =
-                            extract_fastcgi_pass_from_config(&content)
-                                .unwrap_or_else(|| ("127.0.0.1".to_string(), 9000));
+            if path.extension().is_some_and(|extension| extension == "conf")
+                && let Some(name) = path.file_stem().and_then(|name| name.to_str())
+                && let Ok(content) = fs::read_to_string(&path)
+            {
+                let domain = extract_domain_from_config(&content)
+                    .unwrap_or_else(|| name.to_string());
+                let root = extract_root_from_config(&content).unwrap_or_default();
+                let port = extract_port_from_config(&content).unwrap_or(80);
+                let php_enabled = content.contains("fastcgi_pass");
+                let (fastcgi_address, fastcgi_port) =
+                    extract_fastcgi_pass_from_config(&content)
+                        .unwrap_or_else(|| ("127.0.0.1".to_string(), 9000));
 
-                        vhosts.push(VirtualHost {
-                            name: name.to_string(),
-                            domain,
-                            root,
-                            port,
-                            php_enabled,
-                            php_fastcgi_port: Some(fastcgi_port),
-                            php_fastcgi_address: Some(fastcgi_address),
-                            enabled: true,
-                            config_path: Some(path.to_string_lossy().to_string()),
-                            error: None,
-                        });
-                    }
-                }
+                vhosts.push(VirtualHost {
+                    name: name.to_string(),
+                    domain,
+                    root,
+                    port,
+                    php_enabled,
+                    php_fastcgi_port: Some(fastcgi_port),
+                    php_fastcgi_address: Some(fastcgi_address),
+                    enabled: true,
+                    config_path: Some(path.to_string_lossy().to_string()),
+                    error: None,
+                });
             }
         }
     }
