@@ -17,6 +17,7 @@ fn main() {
             commands::nginx::create_vhost_cmd,
             commands::nginx::update_vhost_cmd,
             commands::nginx::delete_vhost_cmd,
+            commands::vhost::detect_php_cgi_cmd,
             commands::php::detect_php_cmd,
             commands::php::check_php_port_cmd,
             commands::php::start_php_cgi_cmd,
