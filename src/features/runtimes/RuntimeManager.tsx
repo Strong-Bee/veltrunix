@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { RUNTIME_TYPES, RuntimeInfo } from './types'
 import { detectRuntimes } from './api'
 import { PageHeader } from '../../components/ui/PageHeader'
@@ -26,6 +26,8 @@ export default function RuntimeManager() {
       setLoading(false)
     }
   }, [])
+
+  useEffect(() => { void refresh() }, [refresh])
 
   return (
     <div className="space-y-6">
