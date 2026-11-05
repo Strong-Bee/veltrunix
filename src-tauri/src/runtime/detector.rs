@@ -281,13 +281,18 @@ mod tests {
     #[test]
     fn test_detect_all_runtimes_returns_five() {
         let results = detect_all_runtimes();
-        assert_eq!(results.len(), 5);
+        assert_eq!(results.len(), 18);
         let names: Vec<&str> = results.iter().map(|r| r.name.as_str()).collect();
         assert!(names.contains(&"php"));
         assert!(names.contains(&"node"));
         assert!(names.contains(&"npm"));
         assert!(names.contains(&"composer"));
         assert!(names.contains(&"git"));
+        assert!(names.contains(&"python"));
+        assert!(names.contains(&"mysql-server"));
+        assert!(names.contains(&"mariadb-server"));
+        assert!(names.contains(&"postgresql"));
+        assert!(names.contains(&"docker"));
     }
 
     #[test]
