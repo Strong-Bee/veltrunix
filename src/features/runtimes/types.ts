@@ -29,4 +29,6 @@ export const RUNTIME_TYPES: RuntimeTypeConfig[] = [
   { key: 'java', label: 'Java' },
   { key: 'rust', label: 'Rust' },
   { key: 'sqlite', label: 'SQLite CLI' },
+  { key: 'mysql-server', label: 'MySQL Server (mysqld)' },
+  { key: 'mariadb-server', label: 'MariaDB Server (mariadbd)' },
 ];
