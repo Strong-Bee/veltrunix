@@ -13,5 +13,5 @@ export async function detectRuntimes(): Promise<RuntimeInfo[]> {
 }
 
 export async function detectRuntimeByName(name: string): Promise<RuntimeInfo> {
-  return invoke<RuntimeInfo>('detect_runtime_by_name', { name })
+  return invoke<RuntimeInfo>('detect_runtime_by_name', { req: { name } })
 }
