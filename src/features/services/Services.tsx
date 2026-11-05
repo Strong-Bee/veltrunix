@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Card, CardContent, CardHeader } from '../../components/ui/Card'
@@ -23,14 +24,14 @@ function ServiceCard({ title, description, status, detail, children }: {
   description: string
   status: ServiceState
   detail?: string | null
-  children?: React.ReactNode
+  children?: ReactNode
 }) {
   return (
     <Card variant="elevated">
       <CardHeader title={title} description={description} />
       <CardContent className="mt-4 space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <StatusBadge status={status} variant="nginx" />
+          {status === 'Unavailable' ? <span className="rounded-full border border-surface-border px-2.5 py-1 text-xs text-text-muted">Belum tersedia</span> : <StatusBadge status={status} variant="nginx" />}
           {detail && <span className="text-xs text-text-muted font-mono truncate">{detail}</span>}
         </div>
         {children}
