@@ -4,11 +4,11 @@
 
 Veltrunix adalah aplikasi desktop Windows untuk membantu developer mengelola lingkungan pengembangan lokal melalui satu antarmuka. Aplikasi dibangun menggunakan Rust, Tauri 2, React, TypeScript, Vite, dan Tailwind CSS.
 
-> Status pengembangan: fondasi desktop, deteksi runtime, PHP-CGI, Nginx, virtual host, dan halaman Service Center tersedia. Service Center saat ini mengontrol Nginx dan PHP-CGI; Apache, MySQL/MariaDB, PostgreSQL, project manager, local domains, logs, dan settings belum menjadi fitur operasional.
+> Status pengembangan: fondasi desktop, deteksi runtime, PHP-CGI, Nginx, virtual host, dan halaman Service Center tersedia. Service Center saat ini mengontrol Nginx, Apache, dan PHP-CGI. Runtime Manager mendeteksi toolchain bahasa dan CLI database; kontrol service database, installer runtime, project manager, local domains, logs, dan settings masih dalam pengembangan.
 
 ## Fitur yang tersedia
 
-- **Runtime Manager** — mendeteksi PHP, Node.js, npm, Composer, dan Git dari PATH.
+- **Runtime Manager** — mendeteksi PHP, Python, Node.js, npm, Composer, Git, MySQL/MariaDB client, PostgreSQL CLI, Redis, Docker, Go, Java, Rust, dan SQLite CLI dari PATH. Deteksi CLI database tidak berarti server database sudah terpasang atau sedang berjalan.
 - **PHP Manager** — mendeteksi PHP serta mengelola proses PHP-CGI/FastCGI.
 - **Nginx Manager** — mendeteksi Nginx, memeriksa konfigurasi, dan mengontrol proses.
 - **Virtual Host** — membuat, memperbarui, dan menghapus konfigurasi virtual host Nginx.
