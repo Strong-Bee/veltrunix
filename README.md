@@ -8,7 +8,7 @@ Veltrunix adalah aplikasi desktop Windows untuk membantu developer mengelola lin
 
 ## Fitur yang tersedia
 
-- **Runtime Manager** — mendeteksi PHP, Python, Node.js, npm, Composer, Git, MySQL/MariaDB client, PostgreSQL CLI, Redis, Docker, Go, Java, Rust, dan SQLite CLI dari PATH. Deteksi CLI database tidak berarti server database sudah terpasang atau sedang berjalan.
+- **Runtime Manager** — mendeteksi PHP, Python, Node.js, npm, Composer, Git, MySQL/MariaDB server dan client, PostgreSQL CLI, Redis, Docker, Go, Java, Rust, dan SQLite CLI dari PATH. Deteksi CLI database tidak berarti server database sudah terpasang atau sedang berjalan.
 - **PHP Manager** — mendeteksi PHP serta mengelola proses PHP-CGI/FastCGI.
 - **Nginx Manager** — mendeteksi Nginx, memeriksa konfigurasi, dan mengontrol proses.
 - **Virtual Host** — membuat, memperbarui, dan menghapus konfigurasi virtual host Nginx.
