@@ -6,63 +6,27 @@ interface NavLinkProps {
 }
 
 const ICONS: Record<string, string> = {
-  dashboard: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
-  runtimes: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z',
-  php: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
-  webservers: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2v2.945M8 3.935V5.5A2.5 2.5 0 0110.5 8h.5a2 2 0 012 2 2 2 0 01-2 2 2 2 0 01-2-2h-.014c0-.995.068-1.97.195-2.924M16 7.572a3 3 0 01-2.121 3.883l-2.829 2.829c-.586.586-1.535.586-2.121 0l-2.829-2.829a3 3 0 010-4.243l2.829-2.829c.586-.586 1.535-.586 2.121 0l2.829 2.829a3 3 0 010 4.243Z',
-  databases: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z',
-  projects: 'M12 6V4m0 2a2 2 0 100 4m0-4V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4',
-  laravel: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
-  domains: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4',
-  nginx: 'M12 2a2 2 0 00-2 2v3a2 2 0 00-2 2H3a2 2 0 00-2 2v14a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2h-1V4a2 2 0 00-2-2 2 2 0 00-2 2zM3 9v1h18V9zM3 13v1h18v-1zM3 17v1h18v-1z',
-  vhosts: 'M4 6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 12V8a2 2 0 00-2-2H4a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2zm6-9a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2V8a2 2 0 00-2-2h-2zm6 9a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2V8a2 2 0 00-2-2h-2zm6-9a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2V8a2 2 0 00-2-2h-2z',
-  services: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
-  logs: 'M12 6V4m0 2a2 2 0 100 4m0-4V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4m0 2V4',
-  settings: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z',
+  dashboard: 'M3 13h8V3H3v10zm10 8h8V11h-8v10zM13 3v6h8V3h-8zM3 21h8v-6H3v6z',
+  projects: 'M3 7.5A2.5 2.5 0 015.5 5H10l2 2h6.5A2.5 2.5 0 0121 9.5v8a2.5 2.5 0 01-2.5 2.5h-13A2.5 2.5 0 013 17.5v-10z',
+  domains: 'M12 21a9 9 0 100-18 9 9 0 000 18zm-8-9h16M12 3a15 15 0 010 18m0-18a15 15 0 000 18',
+  vhosts: 'M4 5h16v14H4zM4 9h16M8 5v4m4-4v4',
+  services: 'M4 7h16M4 12h16M4 17h16M7 4v6m10 0v7',
+  webservers: 'M3 5h18v14H3zM3 9h18m-13 6h4m-4 2h7',
+  nginx: 'M12 3l8 4v6c0 4.5-3.4 7.4-8 9-4.6-1.6-8-4.5-8-9V7l8-4zm-3 9h6m-3-3v6',
+  runtimes: 'M8 3h8l-1 6 4 7H5l4-7-1-6zm-3 16h14',
+  php: 'M3 12c2-5 16-5 18 0-2 5-16 5-18 0zm5 0h.01M12 12h.01M16 12h.01',
+  databases: 'M4 6c0-2 3.6-3 8-3s8 1 8 3-3.6 3-8 3-8-1-8-3zm0 0v12c0 2 3.6 3 8 3s8-1 8-3V6m-16 6c0 2 3.6 3 8 3s8-1 8-3',
+  laravel: 'M4 5l6-2 6 3-6 3-6-3zm0 0v7l6 3 6-3V6m-6 9v6l6-3v-6',
+  logs: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5',
+  settings: 'M12 8a4 4 0 100 8 4 4 0 000-8zm0-5v2m0 14v2m9-9h-2M5 12H3m15.4-6.4L17 7m-10 10l-1.4 1.4m12.8 0L17 17M7 7L5.6 5.6',
+  about: 'M12 22a10 10 0 100-20 10 10 0 000 20zm0-14v.01M12 11v5',
 }
 
 export function NavLink({ item, active, onSelect, collapsed }: NavLinkProps) {
   const isActive = active === item.key
-
-  return (
-    <button
-      onClick={() => onSelect(item.key)}
-      className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-200 ${
-        isActive
-          ? 'bg-primary/10 text-primary border-r-2 border-primary'
-          : 'text-text-muted hover:bg-surface-elevated hover:text-text-foreground'
-      }`}
-      aria-pressed={isActive}
-      aria-current={isActive ? 'page' : undefined}
-    >
-      {collapsed ? (
-        <span className="shrink-0 p-1.5 rounded-md bg-primary/10 text-primary">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={ICONS[item.key] ?? ICONS.dashboard}
-            />
-          </svg>
-        </span>
-      ) : (
-        <>
-          <span className="shrink-0 p-1.5 rounded-md bg-surface-elevated text-text-muted">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={ICONS[item.key] ?? ICONS.dashboard}
-              />
-            </svg>
-          </span>
-          <span className={isActive ? 'font-semibold text-text-foreground' : 'font-normal text-text-muted'}>
-            {item.label}
-          </span>
-        </>
-      )}
-    </button>
-  )
+  return <button type="button" onClick={() => onSelect(item.key)} className={`nav-link ${isActive ? 'nav-link-active' : ''} ${collapsed ? 'nav-link-collapsed' : ''}`} aria-label={collapsed ? item.label : undefined} title={collapsed ? item.label : undefined} aria-pressed={isActive} aria-current={isActive ? 'page' : undefined}>
+    <span className="nav-link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={ICONS[item.key] ?? ICONS.dashboard} /></svg></span>
+    {!collapsed && <span className="nav-link-label">{item.label}</span>}
+    {isActive && <span className="nav-link-indicator" />}
+  </button>
 }
